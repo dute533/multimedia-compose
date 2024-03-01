@@ -98,7 +98,7 @@ services:
       - 8686:8686
     restart: unless-stopped
 
-navidrome: #Music player
+navidrome:
     image: deluan/navidrome:latest
     user: $PUID:$PGID # should be owner of volumes
     ports:
@@ -112,3 +112,16 @@ navidrome: #Music player
     volumes:
       - "./navidrome:/data"
       - "$MEDIADIR/music:/music:ro"
+
+audiobookshelf:
+  container_name: audiobookshelf
+  image: ghcr.io/advplyr/audiobookshelf:latest
+  user: $PUID:$PGID
+  ports:
+    - 13378:80
+  volumes:
+    - $MEDIADIR/audiobooks:/audiobooks
+    - $MEDIADIR/podcasts:/podcasts
+    - ./audiobookshelf:/config
+    - ./audiobookshelf/metadata:/metadata
+  restart: unless-stopped
