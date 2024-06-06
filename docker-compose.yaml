@@ -4,6 +4,24 @@ networks:
     external: true
 
 services:
+  jellyfin: # Jellyfin media server
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+     environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    user: $PUID:$PGID
+    # devices:
+    #  - /dev/dri:/dev/dri # for hardware transcoding
+    ports:
+    - "8096:8096" # HTTP Port
+    # - "8920:8920" # HTTPS Port
+    volumes:
+      - ./jellyfin:/config
+      - $MEDIADIR/:/data/media
+    restart: unless-stopped
+
   bazarr: #Subtitle grabber
     image: ghcr.io/linuxserver/bazarr
     container_name: bazarr
@@ -125,3 +143,18 @@ audiobookshelf:
     - ./audiobookshelf:/config
     - ./audiobookshelf/metadata:/metadata
   restart: unless-stopped
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    volumes:
+      - ./readarr:/config
+      - $MEDIADIR:/media
+      - ./media/usenet:/media/usenet
+    ports:
+      - 8787:8787
+    restart: unless-stopped
